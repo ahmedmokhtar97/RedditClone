@@ -21,16 +21,6 @@ public class RedditCloneApplication {
     }
 
 
-    @Bean
-    CommandLineRunner runnerDev(){
-        return args -> {
-            logger.error("You are at Error level");
-            logger.warn("You are at Warn level");
-            logger.info("You are at Info level");
-            logger.debug("You are at Debug level");
-            logger.trace("You are at Trace level");
-        };
-    }
 
 
 }
