@@ -5,6 +5,8 @@ import com.mokhtar.redditclone.domain.Comment;
 import com.mokhtar.redditclone.domain.Link;
 import com.mokhtar.redditclone.repository.CommentRepository;
 import com.mokhtar.redditclone.repository.LinkRepository;
+import com.mokhtar.redditclone.service.CommentService;
+import com.mokhtar.redditclone.service.LinkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,21 +24,21 @@ import java.util.Optional;
 @Controller
 public class LinkController {
 
-    private LinkRepository linkRepository;
-    private CommentRepository commentRepository;
+    private LinkService linkService;
+    private CommentService commentService;
 
     private static final Logger logger = LoggerFactory.getLogger(LinkController.class);
 
     @Autowired
-    public LinkController(LinkRepository linkRepository, CommentRepository commentRepository) {
-        this.linkRepository = linkRepository;
-        this.commentRepository = commentRepository;
+    public LinkController(LinkService linkService, CommentService commentService) {
+        this.linkService =  linkService;
+        this.commentService = commentService;
     }
 
     @GetMapping("/")
     public String list(Model model){
         model.addAttribute("pageTitle", "Link");
-        List<Link> links = linkRepository.findAll();
+        List<Link> links = linkService.findAll();
         model.addAttribute("links", links);
         return "link/index";
     }
@@ -44,7 +46,7 @@ public class LinkController {
 
     @GetMapping("link/{id}")
     public String getById(@PathVariable Long id, Model model){
-        Optional<Link> link = linkRepository.findById(id);
+        Optional<Link> link = linkService.findById(id);
         if(link.isPresent()) {
             Link currentLink = link.get();
             Comment comment = new Comment();
@@ -70,7 +72,7 @@ public class LinkController {
             model.addAttribute("link", link);
             return "link/submit";
         }else{
-            linkRepository.save(link);
+            linkService.save(link);
             logger.info("LINK SAVED SUCCESSFULLY");
             redirectAttributes
                     .addAttribute("id", link.getId())
@@ -85,7 +87,7 @@ public class LinkController {
         if(bindingResult.hasErrors())
             logger.error(bindingResult.toString());
         else{
-            commentRepository.save(comment);
+            commentService.save(comment);
             logger.info("COMMENT IS SAVED");
         }
         return "redirect:/link/"+ comment.getLink().getId();
