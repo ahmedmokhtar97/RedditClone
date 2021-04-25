@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
 
 @SpringBootApplication
 
@@ -33,5 +34,9 @@ public class RedditCloneApplication {
     }
 
 
+    @Bean
+    public SpringSecurityDialect securityDialect(){
+        return new SpringSecurityDialect();
+    }
 
 }
