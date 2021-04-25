@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 @Getter
@@ -19,6 +20,11 @@ public class Vote {
     private Long id;
 
     @NonNull
-    private int vote;
+    private short direction;
+
+    @NonNull
+    @ManyToOne
+    private Link link;
+
 
 }
