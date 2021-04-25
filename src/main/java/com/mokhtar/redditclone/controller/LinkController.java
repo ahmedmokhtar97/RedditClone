@@ -1,11 +1,14 @@
 package com.mokhtar.redditclone.controller;
 
 
+import com.mokhtar.redditclone.domain.Comment;
 import com.mokhtar.redditclone.domain.Link;
+import com.mokhtar.redditclone.repository.CommentRepository;
 import com.mokhtar.redditclone.repository.LinkRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,12 +23,14 @@ import java.util.Optional;
 public class LinkController {
 
     private LinkRepository linkRepository;
+    private CommentRepository commentRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(LinkController.class);
 
     @Autowired
-    public LinkController(LinkRepository linkRepository) {
+    public LinkController(LinkRepository linkRepository, CommentRepository commentRepository) {
         this.linkRepository = linkRepository;
+        this.commentRepository = commentRepository;
     }
 
     @GetMapping("/")
@@ -41,7 +46,11 @@ public class LinkController {
     public String getById(@PathVariable Long id, Model model){
         Optional<Link> link = linkRepository.findById(id);
         if(link.isPresent()) {
-            model.addAttribute("link", link.get());
+            Link currentLink = link.get();
+            Comment comment = new Comment();
+            comment.setLink(currentLink);
+            model.addAttribute("comment", comment);
+            model.addAttribute("link", currentLink);
             return "link/view";
         }       else
             return "redirect:/";
@@ -70,5 +79,16 @@ public class LinkController {
         }
     }
 
+    @Secured("ROLE_USER")
+    @PostMapping("/link/comments")
+    public String addComment(@Valid Comment comment, BindingResult bindingResult){
+        if(bindingResult.hasErrors())
+            logger.error(bindingResult.toString());
+        else{
+            commentRepository.save(comment);
+            logger.info("COMMENT IS SAVED");
+        }
+        return "redirect:/link/"+ comment.getLink().getId();
+    }
 }
 

@@ -1,17 +1,21 @@
 package com.mokhtar.redditclone.domain;
 
+import com.mokhtar.redditclone.service.BeanUtil;
 import lombok.*;
+import org.ocpsoft.prettytime.PrettyTime;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Entity
 @Getter
 @Setter
 @RequiredArgsConstructor
-@ToString
 @NoArgsConstructor
 public class Comment extends Auditable {
 
@@ -26,5 +30,13 @@ public class Comment extends Auditable {
     @NonNull
     private Link link;
 
+    public String getPrettyTime() {
+        PrettyTime pt = BeanUtil.getBean(PrettyTime.class);
+        return pt.format(convertToDateViaInstant(getCreationDate()));
+    }
+
+    private Date convertToDateViaInstant(LocalDateTime dateToConvert) {
+        return java.util.Date.from(dateToConvert.atZone(ZoneId.systemDefault()).toInstant());
+    }
 
 }
