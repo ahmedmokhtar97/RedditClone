@@ -1,14 +1,17 @@
 package com.mokhtar.redditclone.domain;
 
+import com.mokhtar.redditclone.domain.validator.PasswordsMatch;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,8 +19,8 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@ToString
 @NoArgsConstructor
+@PasswordsMatch
 public class User implements UserDetails {
 
     @Id @GeneratedValue
@@ -45,6 +48,26 @@ public class User implements UserDetails {
     )
     private Set<Role> roles = new HashSet<>();
 
+    private String activationCode;
+
+    @NonNull
+    @NotEmpty(message = "Please Enter you First Name")
+    private String firstName;
+
+    @NonNull @NotEmpty(message = "Please Enter your last name")
+    private String lastName;
+
+    @NonNull
+    @NotEmpty(message = "Enter unique alias")
+    @Column(nullable = false, unique = true)
+    private String alias;
+
+
+    @Transient
+    @Setter(AccessLevel.NONE)
+    private String fullName;
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -60,6 +83,15 @@ public class User implements UserDetails {
     public void addRoles(Set<Role> roles){
         roles.forEach(this::addRole);
     }
+
+
+    @Transient
+    @NotEmpty(message = "Please Enter password confirm")
+    private String confirmPassword;
+
+
+    @OneToMany(mappedBy = "user")
+    private List<Link> links;
 
 
     @Override
@@ -80,5 +112,9 @@ public class User implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
+    }
+
+    public String getFullName(){
+        return firstName + " " + lastName;
     }
 }

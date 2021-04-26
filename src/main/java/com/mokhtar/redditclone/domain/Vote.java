@@ -11,7 +11,6 @@ import javax.persistence.ManyToOne;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@ToString
 @NoArgsConstructor
 public class Vote {
 

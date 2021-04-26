@@ -44,18 +44,22 @@ public class LinkController {
     }
 
 
-    @GetMapping("link/{id}")
-    public String getById(@PathVariable Long id, Model model){
+    @GetMapping("/link/{id}")
+    public String read(@PathVariable Long id, Model model) {
         Optional<Link> link = linkService.findById(id);
-        if(link.isPresent()) {
+        if( link.isPresent() ) {
             Link currentLink = link.get();
             Comment comment = new Comment();
             comment.setLink(currentLink);
-            model.addAttribute("comment", comment);
-            model.addAttribute("link", currentLink);
+
+            logger.warn("User Alias: {}",currentLink.getUser().getAlias());
+            model.addAttribute("comment",comment);
+            model.addAttribute("link",currentLink);
+            model.addAttribute("success", model.containsAttribute("success"));
             return "link/view";
-        }       else
+        } else {
             return "redirect:/";
+        }
     }
 
     @GetMapping("link/submit")
@@ -72,6 +76,7 @@ public class LinkController {
             model.addAttribute("link", link);
             return "link/submit";
         }else{
+
             linkService.save(link);
             logger.info("LINK SAVED SUCCESSFULLY");
             redirectAttributes

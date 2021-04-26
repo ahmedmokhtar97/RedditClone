@@ -13,7 +13,6 @@ import java.util.Collection;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@ToString
 @NoArgsConstructor
 public class Role {
 
